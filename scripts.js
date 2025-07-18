@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const ref = 'TICKET_' + Date.now();
       
       const handler = PaystackPop.setup({
-        key: 'pk_live_c8d72323ec70238b1fb7ce3d5a42494560fbe815', 
+        key: 'sk_test_a966be63930b50efd9d04cfd5b9171a8cee00582', 
         email: 'customer@example.com', 
         amount: 1000, 
         currency: 'KES',
