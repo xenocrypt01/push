@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lipa na M-Pesa Payment</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #e6f2ff;
+            text-align: center;
+            padding: 50px;
+        }
+        input {
+            padding: 12px;
+            margin: 10px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 12px 25px;
+            background-color: #0f9d58;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #response {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Lipa na M-Pesa</h1>
+
+    <input type="text" id="phone" placeholder="Phone Number (2547XXXXXXX)"><br>
+    <input type="number" id="amount" placeholder="Amount"><br>
+    <button onclick="payWithMpesa()">Pay Now</button>
+
+    <div id="response"></div>
+
+    <script>
+        async function payWithMpesa() {
+            const phone = document.getElementById('phone').value.trim();
+            const amount = document.getElementById('amount').value.trim();
+            const responseDiv = document.getElementById('response');
+
+            if (!phone || !amount) {
+                responseDiv.textContent = 'Please enter both phone number and amount.';
+                return;
+            }
+
+            try {
+                responseDiv.textContent = 'Processing payment... Please wait.';
+
+                const res = await fetch('http://localhost:3000/stkpush', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': 'pk_test_0eee8a8f43a1eb32630d17d480d84def4362fd33'
+                    },
+                    body: JSON.stringify({
+                        phone: phone,
+                        amount: amount
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.ResponseCode === "0") {
+                    responseDiv.textContent = 'STK Push sent to ' + phone + '. Please complete the payment on your phone.';
+                } else {
+                    responseDiv.textContent = 'Payment failed: ' + (data.ResponseDescription || 'Unknown error');
+                }
+
+            } catch (error) {
+                console.error('Payment error:', error);
+                responseDiv.textContent = 'Failed to process payment. Check your connection or try again.';
+            }
+        }
+    </script>
+
+</body>
+</html>
