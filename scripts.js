@@ -1,38 +1,26 @@
-document.getElementById('buyButton').addEventListener('click', async function () {
-    const phone = document.getElementById('phone').value.trim();
-    const amount = document.getElementById('amount').value.trim();
-    const responseDiv = document.getElementById('response');
-
-    if (!phone || !amount) {
-        responseDiv.textContent = 'Please enter both phone number and amount.';
-        return;
-    }
-
-    try {
-        responseDiv.textContent = 'Processing payment... Please wait.';
-
-        const res = await fetch('http://localhost:3000/stkpush', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'x-api-key': 'pk_test_0eee8a8f43a1eb32630d17d480d84def4362fd33'
-            },
-            body: JSON.stringify({
-                phone: phone,
-                amount: amount
-            })
-        });
-
-        const data = await res.json();
-
-        if (data.ResponseCode === "0") {
-            responseDiv.textContent = 'STK Push sent to your phone. Complete payment to buy the product.';
-        } else {
-            responseDiv.textContent = 'Payment failed: ' + (data.ResponseDescription || 'Unknown error');
+document.addEventListener('DOMContentLoaded', function() {
+    const payButton = document.getElementById('payButton');
+    
+    payButton.addEventListener('click', payWithPaystack);
+    
+    function payWithPaystack() {
+      const ref = 'TICKET_' + Date.now();
+      
+      const handler = PaystackPop.setup({
+        key: 'pk_live_c8d72323ec70238b1fb7ce3d5a42494560fbe815', 
+        email: 'customer@example.com', 
+        amount: 1000, 
+        currency: 'KES',
+        ref: ref,
+        label: "Event Ticket Payment",
+        callback: function(response) {
+          alert(`Payment successful! Reference: ${response.reference}`);
+        },
+        onClose: function() {
+          alert('Payment was not completed. You can try again.');
         }
-
-    } catch (error) {
-        console.error('Error:', error);
-        responseDiv.textContent = 'Failed to process payment. Check connection.';
+      });
+      
+      handler.openIframe();
     }
-});
+  });
